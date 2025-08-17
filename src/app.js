@@ -1,7 +1,9 @@
 
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const path = require('path');
 const authRoutes = require('./routes/authRoutes');
 
 
@@ -17,10 +19,15 @@ mongoose.connect(mongoURI, {
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
 
+
 app.use('/auth', authRoutes);
 
-app.get('/', (req, res) => {
-  res.send('Welcome to Express Login App!');
+// Serve React static files
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Catch-all route to serve React index.html for any non-API route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
 });
 
 const PORT = process.env.PORT || 3000;
